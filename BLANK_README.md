@@ -298,7 +298,7 @@ Reasons for the same, limitations and further improvements:
 - Kafka can be used instead of redis for better performance on production.
 - For identity management, using postgreSQL to store hashed passwords is a good solution. It can further be used to generate JWTs and provide authentication and authorization. 
   
-<img width="686" alt="image" src="https://github.com/dyte-submissions/november-2023-hiring-Just-A-Pixel/assets/58350132/c8aa773e-d040-4d19-a811-6d36a7064728">
+![Untitled Diagram](https://github.com/dyte-submissions/november-2023-hiring-Just-A-Pixel/assets/58350132/36ff6485-0263-469b-8dce-6aee2e63dc75)
 
 
 <!-- ROADMAP -->
