@@ -27,7 +27,7 @@ export default function Home() {
             <h1 className=" text-center  mt-40">SEARCH FILTERS</h1>
 
             <KeywordSearch FILTERS={FILTERS} setResult={setResult} />
-            <h1 className=" text-center  mt-40">SEARCH FILTERS</h1>
+            <h1 className=" text-center  mt-40">OUTPUT</h1>
             <div className="flex flex-col justify-center w-1/2 mx-auto">
                 {result.map((data) => {
                     return (
