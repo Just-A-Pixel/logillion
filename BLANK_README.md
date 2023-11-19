@@ -30,23 +30,23 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">project_title</h3>
+<h3 align="center">Dyte Project: Logimillion</h3>
 
   <p align="center">
-    project_description
+    Log high volumes of logs with quick and efficient search results
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    <a href="https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel">View Demo</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
+    <a href="https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel/issues">Report Bug</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+    <a href="https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel/issues">Request Feature</a>
   </p>
 </div>
 
@@ -83,9 +83,10 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[<img width="1670" alt="image" src="https://github.com/dyte-submissions/november-2023-hiring-Just-A-Pixel/assets/58350132/be8a5909-20c0-4e29-8ddf-83253f27ca5a">
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+
+Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `Just-A-Pixel`, `november-2023-hiring-Just-A-Pixel`, `twitter_handle`, `raj-anand0511`, `email_client`, `raj.anand0511@gmail.com`, `logimillion`, `project_description`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -94,13 +95,12 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 ### Built With
 
 * [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+* Express
+* Node
+* Redis
+* Elastic Search
+* Docker
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -109,32 +109,149 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+* Docker
 * npm
   ```sh
   npm install npm@latest -g
   ```
+* This project uses the ports 3000, 3001, 6379, 9200, 9300, 4000 and 4001
+  
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel.git
    ```
-3. Install NPM packages
-   ```sh
-   npm install
+2. Setup redis via docker
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+   docker run --name redis-queue -d -p 6379:6379 redis
    ```
+3. Setup elasticsearch via docker
+   ```
+   docker run --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:7.10.1
+   ```
+   This docker runs attached to the terminal as it takes a little longer than others to be ready (around 30-60 seconds), hence it's easier to track when it's done.
+   To run it without attaching to the terminal, pass ```-d``` flag. You can also check if elastic has spun up completely by running the curl: ```curl --location 'http://localhost:9200/' ```
+   
+4. When you spin up the elasticsearch container for the first time, do this step.
+   After the elasticsearch container has finished booting up, (can be seen when the logs stop updating every few milliseconds), run the following curl command to setup explicit mapping:
+
+```
+curl --location --request PUT 'http://localhost:9200/logs' \
+--header 'Content-Type: application/json' \
+--data '{
+    "mappings": {
+        "properties": {
+            "level": {
+                "type": "keyword",
+                "fields": {
+                    "keyword": {
+                        "type": "text"
+                    }
+                }
+            },
+            "message": {
+                "type": "text"
+            },
+            "resourceId": {
+                "type": "keyword",
+                "fields": {
+                    "keyword": {
+                        "type": "text"
+                    }
+                }
+            },
+            "timestamp": {
+                "type": "date",
+                "fields": {
+                    "keyword": {
+                        "type": "text"
+                    }
+                }
+            },
+            "traceId": {
+                "type": "keyword",
+                "fields": {
+                    "keyword": {
+                        "type": "text"
+                    }
+                }
+            },
+            "spanId": {
+                "type": "keyword",
+                "fields": {
+                    "keyword": {
+                        "type": "text"
+                    }
+                }
+            },
+            "commit": {
+                "type": "keyword",
+                "fields": {
+                    "keyword": {
+                        "type": "text"
+                    }
+                }
+            },
+            "metadata": {
+                "properties": {
+                    "parentResourceId": {
+                        "type": "keyword",
+                        "fields": {
+                            "keyword": {
+                                "type": "text"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}'
+
+```
+
+If your response is this: ```curl: (52) Empty reply from server```, please wait for the docker container to finish setting up.
+
+After the curl command runs succesfully, the response is ```{"acknowledged":true,"shards_acknowledged":true,"index":"logs"}```
+
+5. There are 4 more terminals required for the following. Run these commands from the root to set them up.
+
+In Terminal #1:
+```
+cd ingestor 
+npm install
+npx tsc
+npm run dev
+```
+
+In Terminal #2:
+```
+cd consumer
+npm install
+npx tsc
+npm run dev
+```
+In Terminal #3:
+
+```
+cd client 
+npm install
+npx tsc
+npm run dev
+```
+
+In Terminal #4
+
+```
+cd frontend 
+npm install
+npm run dev
+```
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -143,45 +260,35 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+1. Run the script for the problem statement on port 3000
+
+2. UI is setup up localhost 4001
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+The UI offers multiple search methods
+
+### Full text search
+Search across all keys for text. Currently, this supports exact word matching and not prefix matching. Prefix matching can be included by adding ```"type":       "phrase_prefix"``` in multi-match searching 
+
+- Use the labels to choose which filters to apply. Click to select, click again to deselect. Green means the selected filter will be applied. The search text will return values present in either of the chosen filters, i.e, the filters work like OR condition.
+
+### Full text search
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
+- [ ] Search single and multiple keys for full text search
+- [ ] Search single and multiple filter keys
+- [ ] Search within specific date ranges.
     - [ ] Nested Feature
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- LICENSE -->
 ## License
@@ -195,20 +302,15 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Raj Anand - [@twitter_handle](https://twitter.com/twitter_handle) - raj.anand0511@gmail.com@email_client.com
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel](https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
 
-* []()
-* []()
-* []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -216,18 +318,18 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/Just-A-Pixel/november-2023-hiring-Just-A-Pixel.svg?style=for-the-badge
+[contributors-url]: https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Just-A-Pixel/november-2023-hiring-Just-A-Pixel.svg?style=for-the-badge
+[forks-url]: https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel/network/members
+[stars-shield]: https://img.shields.io/github/stars/Just-A-Pixel/november-2023-hiring-Just-A-Pixel.svg?style=for-the-badge
+[stars-url]: https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Just-A-Pixel/november-2023-hiring-Just-A-Pixel.svg?style=for-the-badge
+[issues-url]: https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel/issues
+[license-shield]: https://img.shields.io/github/license/Just-A-Pixel/november-2023-hiring-Just-A-Pixel.svg?style=for-the-badge
+[license-url]: https://github.com/Just-A-Pixel/november-2023-hiring-Just-A-Pixel/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
+[linkedin-url]: https://linkedin.com/in/raj-anand0511
 [product-screenshot]: images/screenshot.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
