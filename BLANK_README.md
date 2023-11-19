@@ -83,7 +83,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[<img width="1670" alt="image" src="https://github.com/dyte-submissions/november-2023-hiring-Just-A-Pixel/assets/58350132/be8a5909-20c0-4e29-8ddf-83253f27ca5a">
+<img width="1683" alt="image" src="https://github.com/dyte-submissions/november-2023-hiring-Just-A-Pixel/assets/58350132/8fdfe72d-290c-45b5-9f1a-a00a1a65d28c">
+
 
 
 Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `Just-A-Pixel`, `november-2023-hiring-Just-A-Pixel`, `twitter_handle`, `raj-anand0511`, `email_client`, `raj.anand0511@gmail.com`, `logimillion`, `project_description`
@@ -271,11 +272,32 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 The UI offers multiple search methods
 
 ### Full text search
+
+- Make sure to run the curl command for explicit mapping, otherwise calling requests can throw an error.
+- 
 Search across all keys for text. Currently, this supports exact word matching and not prefix matching. Prefix matching can be included by adding ```"type":       "phrase_prefix"``` in multi-match searching 
 
 - Use the labels to choose which filters to apply. Click to select, click again to deselect. Green means the selected filter will be applied. The search text will return values present in either of the chosen filters, i.e, the filters work like OR condition.
 
-### Full text search
+### SEARCH FILTERS
+- Search individual filters. These work in AND logic and use the ```type: keyword```, hence they are better optimised for searching keyword based filters.
+- Click the labels, green means the filter will be used, grey means the filter is turned off.
+- Use the date-time input to find logs within a range.
+
+## System Design 
+
+1. Ingestor takes all the incoming requests and localhost:3000 and pushes the results on an asynchronous message queue running on redis with bullmq.
+2. Consumer picks up jobs for the redis queue and writes to elasticsearch.
+3. Search server is the api interface between users who want to search data and elasticsearch.
+
+Reasons for the same, limitations and further improvements:
+- By using a queue, we merely push the response into the queue and do not wait for write operations. This reduces the response time between server and client, thus increasing the number of write requests that the clients can send per second. The queue stores these requests to be processed at a time when the resources are available.
+- Elastic search on the cloud, on its own can handle over a million writes per second. Thus, this system is sufficient for most of usecases. But, if one wants to further improve the volume, one can use a warm cache like MongoDB with one or more nodes, and listen to write updates, then update the elastic search db.
+- Mustache is a popular golang library that helps to sync data between mongo and elastic.
+- A load balancer like nginx can also be used to further increase capacity.
+- Kafka can be used instead of redis for better performance on production.
+- For identity management, using postgreSQL to store hashed passwords is a good solution. It can further be used to generate JWTs and provide authentication and authorization. 
+  
 
 
 <!-- ROADMAP -->
