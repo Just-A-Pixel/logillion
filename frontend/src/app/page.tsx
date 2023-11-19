@@ -21,6 +21,7 @@ export default function Home() {
 
     return (
         <>
+             <h1 className=" text-center text-2xl">LOGIMILLION</h1>
             <h1 className=" text-center">FULL TEXT SEARCH</h1>
             <FullTextSearch FILTERS={FILTERS} setResult={setResult} />
 
