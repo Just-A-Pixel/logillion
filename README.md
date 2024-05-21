@@ -34,7 +34,7 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">Dyte Project: Logimillion</h3>
+<h3 align="center">Logimillion</h3>
 
   <p align="center">
     Log high volumes of logs with quick and efficient search results
